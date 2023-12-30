@@ -1,5 +1,3 @@
-
-
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include <iostream>
@@ -14,17 +12,20 @@ const unsigned int SCR_HEIGHT = 600;
 
 const char* vertexShaderSource = "#version 330 core\n"
   "layout (location = 0) in vec3 aPos;\n"
+  "layout (location = 1) in vec3 aColor;\n"
+  "out vec3 ourColor;\n"
   "void main()\n"
   "{\n"
   "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+  "   ourColor = aColor;\n"
   "}\0";
 
 const char*  fragmentShaderSource = "#version 330 core\n"
   "out vec4 FragColor;\n"
-  "uniform vec4 ourColor;\n"
+  "in vec3 ourColor;"
   "void main()\n"
   "{\n"
-  "   FragColor = ourColor;\n"
+  "   FragColor = vec4(ourColor, 1.0f);\n"
   "}\0";
 
 int main() {
@@ -84,9 +85,10 @@ int main() {
   glDeleteShader(fragmentShader);
 
   float vertices[] = {
-    -0.5f, -0.5f, 0.0f, //left
-    0.5f,  -0.5f, 0.0f, // right
-    0.0f,  0.5f,  0.0f  // top
+    // positions         // colors
+    0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
+    -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
+    0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top 
   };
   unsigned int VBO, VAO;
   glGenVertexArrays(1, &VAO);
@@ -98,28 +100,22 @@ int main() {
   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
   // 设置顶点属性指针
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  // 位置属性
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
-  
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-  // 你可以unbind VAO，这样其他VAO就不会意外修改此VAO（其实基本不会发生）
-  // 因为在使用其他VAO之前，都是需要调用glBindVertexArray进行绑定的
-  glBindVertexArray(0);
+  // 颜色属性
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
+
+  // 使用着色器程序
+  glUseProgram(shaderProgram);
 
   while (!glfwWindowShouldClose(window)) {
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
-
-    // 使用着色器程序
-    glUseProgram(shaderProgram);
-
-    double timeValue = glfwGetTime();
-    float greenValue = static_cast<float>(sin(timeValue)/ 2.0 + 0.5);
-    int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
-    glUniform4f(vertexColorLocation, 1.0f, greenValue, 0.0f, 1.0f);
 
     // 其实这里只有一个VAO，不需要每次都去绑定它，只是这样做更像正常的开发流程
     glBindVertexArray(VAO);
