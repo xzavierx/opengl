@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 project(opengl)
+include_directories(stb)
 add_subdirectory(glad)
 add_subdirectory(glfw)
 add_subdirectory(helloworld)

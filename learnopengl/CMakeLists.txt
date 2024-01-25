@@ -50,3 +50,21 @@ set(shaders_interpolation_SOURCE_FILES
 
 add_executable(shaders_interpolation ${shaders_interpolation_SOURCE_FILES})
 target_link_libraries(shaders_interpolation glad glfw)
+
+set(textures_SOURCE_FILES 
+  textures.cpp
+)
+add_executable(textures ${textures_SOURCE_FILES})
+target_link_libraries(textures glad glfw)
+configure_file(4.1.texture.fs ${CMAKE_BINARY_DIR}/learnopengl/Debug/4.1.texture.fs COPYONLY)
+configure_file(4.1.texture.vs ${CMAKE_BINARY_DIR}/learnopengl/Debug/4.1.texture.vs COPYONLY)
+configure_file(container.jpg ${CMAKE_BINARY_DIR}/learnopengl/Debug/container.jpg COPYONLY)
+
+set(textures_combined_SOURCE_FILES 
+  textures_combined.cpp
+)
+add_executable(textures_combined ${textures_combined_SOURCE_FILES})
+target_link_libraries(textures_combined glad glfw)
+configure_file(4.2.texture.fs ${CMAKE_BINARY_DIR}/learnopengl/Debug/4.2.texture.fs COPYONLY)
+configure_file(4.2.texture.vs ${CMAKE_BINARY_DIR}/learnopengl/Debug/4.2.texture.vs COPYONLY)
+configure_file(awesomeface.png ${CMAKE_BINARY_DIR}/learnopengl/Debug/awesomeface.png COPYONLY)
