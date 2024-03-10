@@ -113,9 +113,10 @@ glBindBuffer(GL_ARRAY_BUFFER, VBO);
   * GL_DYNAMIC_DRAW:数据会改变很多, 确保显卡把数据放在能够高速写入的内存部分
   * GL_STREAM_DRAW:数据绘制时都会改变，同上
 
-## glCreateShader, glShaderSource
+## glCreateShader, glShaderSource, glCompileShader
 glCreateShader - 创建一个着色器对象
 glShaderSource - 将着色器源码附加到着色器对象上
+glCompileShader - 编译着色器
 * 参数2 - 字符串数量
 * 参数3 - 字符串地址
 ```cpp
@@ -125,15 +126,15 @@ unsigned int vetexShader;
 vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
 glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+
+glCompileShader(vertexShader);
 ```
 
-## glCompileShader, glGetShaderiv, glGetShaderInfoLog
-glCompileShader - 编译着色器
+## glGetShaderiv, glGetShaderInfoLog
+在glCompileShader后面调用
 glGetShaderiv - 获取编译结果
 glGetShaderInfoLog - 获取错误信息
 ```cpp
-glCompileShader(vertexShader);
-
 int success;
 char infoLog[512];
 glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
@@ -143,3 +144,21 @@ if (!success) {
   cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << endl;
 }
 ```
+
+## glCreateProgram, glAttachShader, glLinkProgram
+glCreateProgram - 创建一个程序
+glAttachShader - 将之前编译的着色器附加到程序对象上
+glLinkProgram - 链接程序
+```cpp
+unsigned int shaderProgram;
+shaderProgram = glCreateProgram();
+
+glAttachShader(shaderProgram, vertexShader);
+glAttachShader(shaderProgram, fragmentShader);
+
+glLinkProgram(shaderProgram);
+```
+
+## glGetProgram, glGetShaderInfoLog
+glLinkProgram之后调用
+glGetProgram
