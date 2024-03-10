@@ -1,4 +1,4 @@
-
+﻿
 #include <glad/glad.h>
 #include "GLFW/glfw3.h"
 #include <iostream>
@@ -27,14 +27,18 @@ const char*  fragmentShaderSource = "#version 330 core\n"
 
 int main() {
   glfwInit();
+  // 我们需要告诉GLFW我们要使用的版本, 这样GLFW会在创建OPENGL上下文时做出适当的调整
+  // 这样也确保用户在没有适当的OpenGL版本支持的情况下无法运行
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  // 我们明确告诉GLFW我们使用的是核心模式(Core-Profile),意味着我们使用OpenGL功能的一个子集
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
   
 #ifdef __APPLE__
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
+  // 创建窗口对象
   GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
   if (window == NULL) {
     std::cout << "Failed to create GLFW window" << std::endl;
@@ -43,8 +47,10 @@ int main() {
   }
 
   glfwMakeContextCurrent(window);
+  // 告诉GLFW我们希望每当窗口跳这个调整大小的时候调用这个函数
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+  // GLAD是用来管理OpenGL的函数指针的，所以调用任何OpenGL的函数之前我们需要初始化GLAD
   if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
     std::cout << "Failed to initialize GLAD" << std::endl;
     return -1;
@@ -105,7 +111,8 @@ int main() {
   // 因为在使用其他VAO之前，都是需要调用glBindVertexArray进行绑定的
   glBindVertexArray(0);
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window)) { 
+    // Render Loop渲染循环
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -120,7 +127,9 @@ int main() {
     // 绘制物体
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
+    // 交换颜色缓冲(它是一个存储着GLFW窗口每一个像素颜色值的大缓冲)
     glfwSwapBuffers(window);
+    // 检查有没有触发什么事件，更新窗口状态，并调用对应的回调函数
     glfwPollEvents();
   }
 
@@ -140,5 +149,9 @@ void processInput(GLFWwindow* window) {
 
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
-  glViewport(0, 0, width, height);
+  // 告诉OpenGL渲染窗口的尺寸大小
+  // 在这里我们将大小设置为窗口大小一样大，当然也可以设置小点，这样空余出来的地方可以绘制其他数据
+  // glViewport(0, 0, width, height);
+  // glViewport(0, 0, 800, 600);
+  glViewport((width-SCR_WIDTH)/2, (height-SCR_HEIGHT)/2, SCR_WIDTH, SCR_HEIGHT);
 }
